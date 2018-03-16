@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use parser::ast::*;
 use parser::remove_whitespace;
 
-
 #[test]
 fn do_nothing_if_unneeded() {
     let ast = vec![Node::Text("hey ".to_string())];
@@ -11,7 +10,10 @@ fn do_nothing_if_unneeded() {
 
 #[test]
 fn remove_previous_ws_if_single_opening_tag_requires_it() {
-    let ws = WS { left: true, right: false };
+    let ws = WS {
+        left: true,
+        right: false,
+    };
     let ast = vec![
         Node::Text("hey ".to_string()),
         Node::ImportMacro(ws, "hey ".to_string(), "ho".to_string()),
@@ -28,7 +30,10 @@ fn remove_previous_ws_if_single_opening_tag_requires_it() {
 
 #[test]
 fn remove_next_ws_if_single_opening_tag_requires_it() {
-    let ws = WS { left: true, right: true };
+    let ws = WS {
+        left: true,
+        right: true,
+    };
     let ast = vec![
         Node::ImportMacro(ws, "hey ".to_string(), "ho".to_string()),
         Node::Text("  hey".to_string()),
@@ -45,8 +50,14 @@ fn remove_next_ws_if_single_opening_tag_requires_it() {
 
 #[test]
 fn handle_ws_both_sides_for_raw_tag() {
-    let start_ws = WS { left: true, right: false };
-    let end_ws = WS { left: true, right: true };
+    let start_ws = WS {
+        left: true,
+        right: false,
+    };
+    let end_ws = WS {
+        left: true,
+        right: true,
+    };
     let ast = vec![
         Node::Raw(start_ws, "  hey ".to_string(), end_ws),
         Node::Text("  hey".to_string()),
@@ -64,8 +75,14 @@ fn handle_ws_both_sides_for_raw_tag() {
 
 #[test]
 fn handle_ws_both_sides_for_macro_definitions() {
-    let start_ws = WS { left: true, right: true };
-    let end_ws = WS { left: true, right: true };
+    let start_ws = WS {
+        left: true,
+        right: true,
+    };
+    let end_ws = WS {
+        left: true,
+        right: true,
+    };
     let ast = vec![
         Node::MacroDefinition(
             start_ws,
@@ -100,8 +117,14 @@ fn handle_ws_both_sides_for_macro_definitions() {
 
 #[test]
 fn handle_ws_both_sides_for_forloop_tag_and_remove_empty_node() {
-    let start_ws = WS { left: true, right: true };
-    let end_ws = WS { left: true, right: true };
+    let start_ws = WS {
+        left: true,
+        right: true,
+    };
+    let end_ws = WS {
+        left: true,
+        right: true,
+    };
     let ast = vec![
         Node::Forloop(
             start_ws,
@@ -141,25 +164,40 @@ fn handle_ws_both_sides_for_forloop_tag_and_remove_empty_node() {
 
 #[test]
 fn handle_ws_for_if_nodes() {
-    let start_ws = WS { left: true, right: true };
-    let end_ws = WS { left: false, right: true };
+    let start_ws = WS {
+        left: true,
+        right: true,
+    };
+    let end_ws = WS {
+        left: false,
+        right: true,
+    };
     let ast = vec![
         Node::Text("C ".to_string()),
         Node::If(
             If {
                 conditions: vec![
                     (
-                        WS { left: true, right: true },
+                        WS {
+                            left: true,
+                            right: true,
+                        },
                         Expr::new(ExprVal::Int(1)),
                         vec![Node::Text(" a ".to_string())],
                     ),
                     (
-                        WS { left: true, right: false },
+                        WS {
+                            left: true,
+                            right: false,
+                        },
                         Expr::new(ExprVal::Int(1)),
                         vec![Node::Text(" a ".to_string())],
                     ),
                     (
-                        WS { left: true, right: true },
+                        WS {
+                            left: true,
+                            right: true,
+                        },
                         Expr::new(ExprVal::Int(1)),
                         vec![Node::Text(" a ".to_string())],
                     ),
@@ -179,17 +217,26 @@ fn handle_ws_for_if_nodes() {
                 If {
                     conditions: vec![
                         (
-                            WS { left: true, right: true },
+                            WS {
+                                left: true,
+                                right: true,
+                            },
                             Expr::new(ExprVal::Int(1)),
                             vec![Node::Text("a".to_string())],
                         ),
                         (
-                            WS { left: true, right: false },
+                            WS {
+                                left: true,
+                                right: false,
+                            },
                             Expr::new(ExprVal::Int(1)),
                             vec![Node::Text(" a".to_string())],
                         ),
                         (
-                            WS { left: true, right: true },
+                            WS {
+                                left: true,
+                                right: true,
+                            },
                             Expr::new(ExprVal::Int(1)),
                             vec![Node::Text("a ".to_string())],
                         ),
@@ -205,32 +252,51 @@ fn handle_ws_for_if_nodes() {
 
 #[test]
 fn handle_ws_for_if_nodes_with_else() {
-    let start_ws = WS { left: true, right: true };
-    let end_ws = WS { left: true, right: true };
+    let start_ws = WS {
+        left: true,
+        right: true,
+    };
+    let end_ws = WS {
+        left: true,
+        right: true,
+    };
     let ast = vec![
         Node::Text("C ".to_string()),
         Node::If(
             If {
                 conditions: vec![
                     (
-                        WS { left: true, right: true },
+                        WS {
+                            left: true,
+                            right: true,
+                        },
                         Expr::new(ExprVal::Int(1)),
                         vec![Node::Text(" a ".to_string())],
                     ),
                     (
-                        WS { left: true, right: false },
+                        WS {
+                            left: true,
+                            right: false,
+                        },
                         Expr::new(ExprVal::Int(1)),
                         vec![Node::Text(" a ".to_string())],
                     ),
                     (
-                        WS { left: true, right: true },
+                        WS {
+                            left: true,
+                            right: true,
+                        },
                         Expr::new(ExprVal::Int(1)),
                         vec![Node::Text(" a ".to_string())],
                     ),
                 ],
-                otherwise: Some(
-                    (WS { left: true, right: true }, vec![Node::Text(" a ".to_string())])
-                ),
+                otherwise: Some((
+                    WS {
+                        left: true,
+                        right: true,
+                    },
+                    vec![Node::Text(" a ".to_string())],
+                )),
             },
             end_ws,
         ),
@@ -245,24 +311,37 @@ fn handle_ws_for_if_nodes_with_else() {
                 If {
                     conditions: vec![
                         (
-                            WS { left: true, right: true },
+                            WS {
+                                left: true,
+                                right: true,
+                            },
                             Expr::new(ExprVal::Int(1)),
                             vec![Node::Text("a".to_string())],
                         ),
                         (
-                            WS { left: true, right: false },
+                            WS {
+                                left: true,
+                                right: false,
+                            },
                             Expr::new(ExprVal::Int(1)),
                             vec![Node::Text(" a".to_string())],
                         ),
                         (
-                            WS { left: true, right: true },
+                            WS {
+                                left: true,
+                                right: true,
+                            },
                             Expr::new(ExprVal::Int(1)),
                             vec![Node::Text("a".to_string())],
                         ),
                     ],
-                    otherwise: Some(
-                        (WS { left: true, right: true }, vec![Node::Text("a".to_string())])
-                    ),
+                    otherwise: Some((
+                        WS {
+                            left: true,
+                            right: true,
+                        },
+                        vec![Node::Text("a".to_string())],
+                    )),
                 },
                 end_ws,
             ),

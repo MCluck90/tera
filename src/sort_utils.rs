@@ -41,7 +41,8 @@ impl GetSortKey for OrderedF64 {
 
 impl GetSortKey for bool {
     fn get_sort_key(val: &Value) -> Result<Self> {
-        val.as_bool().ok_or_else(|| format!("expected bool got {}", val).into())
+        val.as_bool()
+            .ok_or_else(|| format!("expected bool got {}", val).into())
     }
 }
 

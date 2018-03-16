@@ -134,11 +134,10 @@ pub fn urlencode(value: Value, args: HashMap<String, Value>) -> Result<Value> {
 /// Escapes quote characters
 pub fn addslashes(value: Value, _: HashMap<String, Value>) -> Result<Value> {
     let s = try_get_value!("addslashes", "value", String, value);
-    Ok(to_value(
-        &s.replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\'", "\\\'")
-    ).unwrap())
+    Ok(to_value(&s.replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("\'", "\\\'"))
+        .unwrap())
 }
 
 /// Transform a string into a slug
@@ -151,13 +150,11 @@ pub fn slugify(value: Value, _: HashMap<String, Value>) -> Result<Value> {
 pub fn title(value: Value, _: HashMap<String, Value>) -> Result<Value> {
     let s = try_get_value!("title", "value", String, value);
 
-    Ok(to_value(
-        &WORDS_RE.replace_all(&s, |caps: &Captures| {
-            let first = caps["first"].to_uppercase();
-            let rest = caps["rest"].to_lowercase();
-            format!("{}{}", first, rest)
-        })
-    ).unwrap())
+    Ok(to_value(&WORDS_RE.replace_all(&s, |caps: &Captures| {
+        let first = caps["first"].to_uppercase();
+        let rest = caps["rest"].to_lowercase();
+        format!("{}{}", first, rest)
+    })).unwrap())
 }
 
 /// Removes html tags from string

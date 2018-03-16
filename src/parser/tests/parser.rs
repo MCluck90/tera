@@ -27,7 +27,10 @@ fn parse_include_tag() {
     assert_eq!(
         ast[0],
         Node::Include(
-            WS { left: false, right: true },
+            WS {
+                left: false,
+                right: true
+            },
             "index.html".to_string(),
         ),
     );
@@ -39,7 +42,10 @@ fn parse_extends() {
     assert_eq!(
         ast[0],
         Node::Extends(
-            WS { left: false, right: true },
+            WS {
+                left: false,
+                right: true
+            },
             "index.html".to_string(),
         ),
     );
@@ -51,7 +57,10 @@ fn parse_comments_before_extends() {
     assert_eq!(
         ast[0],
         Node::Extends(
-            WS { left: false, right: true },
+            WS {
+                left: false,
+                right: true
+            },
             "index.html".to_string(),
         ),
     );
@@ -63,7 +72,10 @@ fn parse_import_macro() {
     assert_eq!(
         ast[0],
         Node::ImportMacro(
-            WS { left: false, right: true },
+            WS {
+                left: false,
+                right: true
+            },
             "macros.html".to_string(),
             "macros".to_string(),
         ),
@@ -90,8 +102,14 @@ fn parse_variable_tag_ident_with_simple_filters() {
         Node::VariableBlock(Expr::with_filters(
             ExprVal::Ident("arr".to_string()),
             vec![
-                FunctionCall { name: "first".to_string(), args: HashMap::new() },
-                FunctionCall { name: "join".to_string(), args: join_args },
+                FunctionCall {
+                    name: "first".to_string(),
+                    args: HashMap::new(),
+                },
+                FunctionCall {
+                    name: "join".to_string(),
+                    args: join_args,
+                },
             ],
         ))
     );
@@ -122,8 +140,8 @@ fn parse_variable_tag_lit_math_expression() {
                 lhs: Box::new(Expr::new(ExprVal::Int(1))),
                 operator: MathOperator::Mul,
                 rhs: Box::new(Expr::new(ExprVal::Float(2.5))),
-            }))),
-        }))),
+            },))),
+        },))),
     );
 }
 
@@ -137,10 +155,10 @@ fn parse_variable_tag_lit_math_expression_with_parentheses() {
                 lhs: Box::new(Expr::new(ExprVal::Ident("count".to_string()))),
                 operator: MathOperator::Add,
                 rhs: Box::new(Expr::new(ExprVal::Int(1))),
-            }))),
+            },))),
             operator: MathOperator::Mul,
             rhs: Box::new(Expr::new(ExprVal::Float(2.5))),
-        })))
+        },)))
     );
 }
 
@@ -155,12 +173,15 @@ fn parse_variable_tag_lit_math_expression_with_parentheses_and_filter() {
                     lhs: Box::new(Expr::new(ExprVal::Ident("count".to_string()))),
                     operator: MathOperator::Add,
                     rhs: Box::new(Expr::new(ExprVal::Int(1))),
-                }))),
+                },))),
                 operator: MathOperator::Mul,
                 rhs: Box::new(Expr::new(ExprVal::Float(2.5))),
-            }),
+            },),
             vec![
-                FunctionCall { name: "round".to_string(), args: HashMap::new() },
+                FunctionCall {
+                    name: "round".to_string(),
+                    args: HashMap::new(),
+                },
             ],
         ))
     );
@@ -175,12 +196,15 @@ fn parse_variable_math_on_filter() {
             lhs: Box::new(Expr::with_filters(
                 ExprVal::Ident("a".to_string()),
                 vec![
-                    FunctionCall { name: "length".to_string(), args: HashMap::new() },
+                    FunctionCall {
+                        name: "length".to_string(),
+                        args: HashMap::new(),
+                    },
                 ],
             )),
             operator: MathOperator::Sub,
             rhs: Box::new(Expr::new(ExprVal::Int(1))),
-        })))
+        },)))
     );
 }
 
@@ -193,7 +217,7 @@ fn parse_variable_tag_simple_logic_expression() {
             lhs: Box::new(Expr::new(ExprVal::Int(1))),
             operator: LogicOperator::Gt,
             rhs: Box::new(Expr::new(ExprVal::Int(2))),
-        })))
+        },)))
     );
 }
 
@@ -210,11 +234,11 @@ fn parse_variable_tag_math_and_logic_expression() {
                     lhs: Box::new(Expr::new(ExprVal::Int(1))),
                     operator: MathOperator::Mul,
                     rhs: Box::new(Expr::new(ExprVal::Float(2.5))),
-                }))),
-            }))),
+                },))),
+            },))),
             operator: LogicOperator::And,
             rhs: Box::new(Expr::new(ExprVal::Ident("admin".to_string()))),
-        })))
+        },)))
     );
 }
 
@@ -232,15 +256,18 @@ fn parse_variable_tag_math_with_filters_and_logic_expression() {
                         lhs: Box::new(Expr::new(ExprVal::Int(1))),
                         operator: MathOperator::Mul,
                         rhs: Box::new(Expr::new(ExprVal::Float(2.5))),
-                    }))),
-                }),
+                    },))),
+                },),
                 vec![
-                    FunctionCall { name: "round".to_string(), args: HashMap::new() },
+                    FunctionCall {
+                        name: "round".to_string(),
+                        args: HashMap::new(),
+                    },
                 ],
             )),
             operator: LogicOperator::And,
             rhs: Box::new(Expr::new(ExprVal::Ident("admin".to_string()))),
-        })))
+        },)))
     );
 }
 
@@ -263,14 +290,14 @@ fn parse_variable_tag_negated_expr() {
                 lhs: Box::new(Expr::new_negated(ExprVal::Ident("id".to_string()))),
                 operator: LogicOperator::And,
                 rhs: Box::new(Expr::new_negated(ExprVal::Bool(true))),
-            }))),
+            },))),
             operator: LogicOperator::And,
             rhs: Box::new(Expr::new_negated(ExprVal::Math(MathExpr {
                 lhs: Box::new(Expr::new(ExprVal::Int(1))),
                 operator: MathOperator::Add,
                 rhs: Box::new(Expr::new(ExprVal::Int(1))),
-            }))),
-        })))
+            },))),
+        },)))
     );
 }
 
@@ -279,13 +306,11 @@ fn parse_variable_tag_simple_test() {
     let ast = parse("{{ id is defined }}").unwrap();
     assert_eq!(
         ast[0],
-        Node::VariableBlock(Expr::new(ExprVal::Test(
-            Test {
-                ident: "id".to_string(),
-                name: "defined".to_string(),
-                args: vec![],
-            }
-        )))
+        Node::VariableBlock(Expr::new(ExprVal::Test(Test {
+            ident: "id".to_string(),
+            name: "defined".to_string(),
+            args: vec![],
+        },)))
     );
 }
 
@@ -299,10 +324,10 @@ fn parse_variable_tag_test_as_expression() {
                 ident: "user".to_string(),
                 name: "defined".to_string(),
                 args: vec![],
-            }))),
+            },))),
             operator: LogicOperator::And,
             rhs: Box::new(Expr::new(ExprVal::Ident("user.admin".to_string()))),
-        })))
+        },)))
     );
 }
 
@@ -314,13 +339,11 @@ fn parse_variable_tag_macro_call() {
 
     assert_eq!(
         ast[0],
-        Node::VariableBlock(Expr::new(ExprVal::MacroCall(
-            MacroCall {
-                namespace: "macros".to_string(),
-                name: "get_time".to_string(),
-                args,
-            }
-        )))
+        Node::VariableBlock(Expr::new(ExprVal::MacroCall(MacroCall {
+            namespace: "macros".to_string(),
+            name: "get_time".to_string(),
+            args,
+        },)))
     );
 }
 
@@ -337,9 +360,12 @@ fn parse_variable_tag_macro_call_with_filter() {
                 namespace: "macros".to_string(),
                 name: "get_time".to_string(),
                 args,
-            }),
+            },),
             vec![
-                FunctionCall { name: "round".to_string(), args: HashMap::new() },
+                FunctionCall {
+                    name: "round".to_string(),
+                    args: HashMap::new(),
+                },
             ],
         ))
     );
@@ -353,12 +379,10 @@ fn parse_variable_tag_global_function() {
 
     assert_eq!(
         ast[0],
-        Node::VariableBlock(Expr::new(ExprVal::FunctionCall(
-            FunctionCall {
-                name: "get_time".to_string(),
-                args,
-            }
-        )))
+        Node::VariableBlock(Expr::new(ExprVal::FunctionCall(FunctionCall {
+            name: "get_time".to_string(),
+            args,
+        },)))
     );
 }
 
@@ -374,10 +398,16 @@ fn parse_variable_tag_global_function_with_filter() {
             ExprVal::FunctionCall(FunctionCall {
                 name: "get_time".to_string(),
                 args,
-            }),
+            },),
             vec![
-                FunctionCall { name: "round".to_string(), args: HashMap::new() },
-                FunctionCall { name: "upper".to_string(), args: HashMap::new() },
+                FunctionCall {
+                    name: "round".to_string(),
+                    args: HashMap::new(),
+                },
+                FunctionCall {
+                    name: "upper".to_string(),
+                    args: HashMap::new(),
+                },
             ],
         ))
     );
@@ -418,7 +448,7 @@ fn parse_set_tag_macro_call() {
                     namespace: "macros".to_string(),
                     name: "something".to_string(),
                     args: HashMap::new(),
-                })),
+                },)),
                 global: false,
             },
         )
@@ -437,7 +467,7 @@ fn parse_set_tag_fn_call() {
                 value: Expr::new(ExprVal::FunctionCall(FunctionCall {
                     name: "utcnow".to_string(),
                     args: HashMap::new(),
-                })),
+                },)),
                 global: false,
             },
         )
@@ -456,7 +486,7 @@ fn parse_set_global_tag() {
                 value: Expr::new(ExprVal::FunctionCall(FunctionCall {
                     name: "utcnow".to_string(),
                     args: HashMap::new(),
-                })),
+                },)),
                 global: true,
             },
         )
@@ -487,7 +517,10 @@ fn parse_filter_section_without_args() {
         Node::FilterSection(
             start_ws,
             FilterSection {
-                filter: FunctionCall { name: "upper".to_string(), args: HashMap::new() },
+                filter: FunctionCall {
+                    name: "upper".to_string(),
+                    args: HashMap::new()
+                },
                 body: vec![Node::Text("A".to_string())],
             },
             end_ws,
@@ -511,7 +544,10 @@ fn parse_filter_section_with_args() {
         Node::FilterSection(
             start_ws,
             FilterSection {
-                filter: FunctionCall { name: "upper".to_string(), args },
+                filter: FunctionCall {
+                    name: "upper".to_string(),
+                    args
+                },
                 body: vec![Node::Text("A".to_string())],
             },
             end_ws,
@@ -579,7 +615,12 @@ fn parse_value_forloop() {
                 value: "item".to_string(),
                 container: Expr::with_filters(
                     ExprVal::Ident("items".to_string()),
-                    vec![FunctionCall { name: "reverse".to_string(), args: HashMap::new() }],
+                    vec![
+                        FunctionCall {
+                            name: "reverse".to_string(),
+                            args: HashMap::new(),
+                        },
+                    ],
                 ),
                 body: vec![Node::Text("A".to_string())],
             },
@@ -602,12 +643,10 @@ fn parse_key_value_forloop() {
             Forloop {
                 key: Some("key".to_string()),
                 value: "item".to_string(),
-                container: Expr::new(ExprVal::FunctionCall(
-                    FunctionCall {
-                        name: "get_map".to_string(),
-                        args: HashMap::new(),
-                    }
-                )),
+                container: Expr::new(ExprVal::FunctionCall(FunctionCall {
+                    name: "get_map".to_string(),
+                    args: HashMap::new(),
+                },)),
                 body: vec![Node::Text("A".to_string())],
             },
             end_ws,

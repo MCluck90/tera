@@ -248,12 +248,10 @@ mod tests {
                 vec![to_value("world").unwrap()],
             ).unwrap()
         );
-        assert!(
-            !ending_with(
-                Some(to_value("hello").unwrap()),
-                vec![to_value("hi").unwrap()],
-            ).unwrap()
-        );
+        assert!(!ending_with(
+            Some(to_value("hello").unwrap()),
+            vec![to_value("hi").unwrap()],
+        ).unwrap());
     }
 
     #[test]

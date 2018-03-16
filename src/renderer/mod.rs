@@ -43,7 +43,6 @@ pub struct Renderer<'a> {
     blocks: Vec<(String, usize)>,
 }
 
-
 impl<'a> Renderer<'a> {
     pub fn new(template: &'a Template, tera: &'a Tera, context: Value) -> Renderer<'a> {
         let should_escape = tera.autoescape_suffixes.iter().any(|ext| {
@@ -92,7 +91,10 @@ impl<'a> Renderer<'a> {
                 // Translate from variable name to variable value
                 match find_variable(context, sub_var.as_ref(), tpl_name) {
                     Err(e) => {
-                        bail!(format!("Variable {} can not be evaluated because: {}", key, e));
+                        bail!(format!(
+                            "Variable {} can not be evaluated because: {}",
+                            key, e
+                        ));
                     }
                     Ok(post_var) => {
                         let post_var_as_str = match post_var {
@@ -100,7 +102,7 @@ impl<'a> Renderer<'a> {
                             Value::Number(ref n) => n.to_string(),
                             _ => bail!(
                                 "Only variables evaluating to String or Number can be used as \
-                                index (`{}` of `{}`)",
+                                 index (`{}` of `{}`)",
                                 sub_var,
                                 key,
                             ),
@@ -111,22 +113,19 @@ impl<'a> Renderer<'a> {
                         let divider = "[".to_string() + sub_var + "]";
                         let mut the_parts = nk.splitn(2, divider.as_str());
 
-                        new_key = the_parts.next().unwrap().to_string()
-                            + "."
+                        new_key = the_parts.next().unwrap().to_string() + "."
                             + post_var_as_str.as_ref()
                             + the_parts.next().unwrap_or("");
                     }
                 }
             }
-            Ok(
-                new_key
-                    .replace("['", ".")
-                    .replace("[\"", ".")
-                    .replace("[", ".")
-                    .replace("']", "")
-                    .replace("\"]", "")
-                    .replace("]", "")
-            )
+            Ok(new_key
+                .replace("['", ".")
+                .replace("[\"", ".")
+                .replace("[", ".")
+                .replace("']", "")
+                .replace("\"]", "")
+                .replace("]", ""))
         }
 
         #[inline]
@@ -251,7 +250,11 @@ impl<'a> Renderer<'a> {
             },
             ExprVal::Int(val) => val as f64,
             ExprVal::Float(val) => val,
-            ExprVal::Math(MathExpr { ref lhs, ref rhs, ref operator }) => {
+            ExprVal::Math(MathExpr {
+                ref lhs,
+                ref rhs,
+                ref operator,
+            }) => {
                 let l = self.eval_expr_as_number(lhs)?;
                 let r = self.eval_expr_as_number(rhs)?;
                 match *operator {
@@ -273,7 +276,11 @@ impl<'a> Renderer<'a> {
     /// Return the value of an expression as a bool
     fn eval_as_bool(&mut self, expr: &Expr) -> Result<bool> {
         let res = match expr.val {
-            ExprVal::Logic(LogicExpr { ref lhs, ref rhs, ref operator }) => {
+            ExprVal::Logic(LogicExpr {
+                ref lhs,
+                ref rhs,
+                ref operator,
+            }) => {
                 match *operator {
                     LogicOperator::Or => self.eval_as_bool(lhs)? || self.eval_as_bool(rhs)?,
                     LogicOperator::And => self.eval_as_bool(lhs)? && self.eval_as_bool(rhs)?,
@@ -303,12 +310,10 @@ impl<'a> Renderer<'a> {
                                 return Ok(false);
                             }
 
-                            lhs_val = Value::Number(
-                                Number::from_f64(lhs_val.as_f64().unwrap()).unwrap()
-                            );
-                            rhs_val = Value::Number(
-                                Number::from_f64(rhs_val.as_f64().unwrap()).unwrap()
-                            );
+                            lhs_val =
+                                Value::Number(Number::from_f64(lhs_val.as_f64().unwrap()).unwrap());
+                            rhs_val =
+                                Value::Number(Number::from_f64(rhs_val.as_f64().unwrap()).unwrap());
                         }
 
                         match *operator {
@@ -319,12 +324,12 @@ impl<'a> Renderer<'a> {
                     }
                 }
             }
-            ExprVal::Ident(ref ident) => {
-                self.lookup_ident(ident).map(|v| v.is_truthy()).unwrap_or(false)
-            }
-            ExprVal::Math(_) | ExprVal::Int(_) | ExprVal::Float(_) => {
-                self.eval_as_number(&expr.val).map(|v| v != 0.0 && !v.is_nan())?
-            }
+            ExprVal::Ident(ref ident) => self.lookup_ident(ident)
+                .map(|v| v.is_truthy())
+                .unwrap_or(false),
+            ExprVal::Math(_) | ExprVal::Int(_) | ExprVal::Float(_) => self.eval_as_number(
+                &expr.val,
+            ).map(|v| v != 0.0 && !v.is_nan())?,
             ExprVal::Test(ref test) => self.eval_test(test).unwrap_or(false),
             ExprVal::Bool(val) => val,
             ExprVal::String(ref string) => !string.is_empty(),
@@ -404,7 +409,7 @@ impl<'a> Renderer<'a> {
                         macro_call.name,
                         arg_name,
                     ),
-                }
+                },
             };
             macro_context.insert(arg_name.to_string(), value);
         }
@@ -487,10 +492,9 @@ impl<'a> Renderer<'a> {
         };
 
         // Checks if it's a string and we need to escape it (if the first filter is `safe` we don't)
-        if self.should_escape
-            && needs_escape
-            && res.is_string()
-            && expr.filters.first().map_or(true, |f| f.name != "safe") {
+        if self.should_escape && needs_escape && res.is_string()
+            && expr.filters.first().map_or(true, |f| f.name != "safe")
+        {
             res = to_value(escape_html(res.as_str().unwrap()))?;
         }
 
@@ -563,11 +567,7 @@ impl<'a> Renderer<'a> {
                         container_name,
                     );
                 }
-                ForLoop::new_key_value(
-                    &node.key.clone().unwrap(),
-                    &node.value,
-                    container_val,
-                )
+                ForLoop::new_key_value(&node.key.clone().unwrap(), &node.value, container_val)
             }
             _ => bail!(
                 "Tried to iterate on a container (`{}`) that has a unsupported type",
@@ -651,7 +651,7 @@ impl<'a> Renderer<'a> {
                     .get_template(&self.template.parents[level - 1])
                     .unwrap()
                     .blocks_definitions
-            },
+            }
         };
 
         // Can we find this one block in these definitions? If so render it
@@ -715,7 +715,14 @@ impl<'a> Renderer<'a> {
             Node::Text(ref s) | Node::Raw(_, ref s, _) => s.to_string(),
             Node::VariableBlock(ref expr) => self.eval_expression(expr)?.render(),
             Node::Set(_, ref set) => self.eval_set(set).and(Ok(String::new()))?,
-            Node::FilterSection(_, FilterSection { ref filter, ref body }, _) => {
+            Node::FilterSection(
+                _,
+                FilterSection {
+                    ref filter,
+                    ref body,
+                },
+                _,
+            ) => {
                 let output = self.render_body(body)?;
 
                 self.eval_filter(Value::String(output), filter)?.render()
@@ -801,9 +808,8 @@ impl<'a> Renderer<'a> {
 
         let mut output = String::new();
         for node in ast {
-            output.push_str(
-                &self.render_node(node).chain_err(|| self.get_error_location())?
-            );
+            output.push_str(&self.render_node(node)
+                .chain_err(|| self.get_error_location())?);
         }
 
         Ok(output)

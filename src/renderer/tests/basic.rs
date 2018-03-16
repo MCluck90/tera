@@ -116,7 +116,10 @@ fn render_variable_block_logic_expr() {
     let inputs = vec![
         ("{{ (1.9 + a) | round > 10 }}", "false"),
         ("{{ (1.9 + a) | round > 10 or b > a }}", "true"),
-        ("{{ 1.9 + a | round == 4 and numbers | length == 3}}", "true"),
+        (
+            "{{ 1.9 + a | round == 4 and numbers | length == 3}}",
+            "true",
+        ),
         ("{{ numbers | length > 1 }}", "true"),
         ("{{ numbers | length == 1 }}", "false"),
         ("{{ numbers | length - 2 == 1 }}", "true"),
@@ -158,7 +161,10 @@ fn comments_are_ignored() {
     let inputs = vec![
         ("Hello {# comment #}world", "Hello world"),
         ("Hello {# comment {# nested #}world", "Hello world"),
-        ("My name {# was {{ name }} #}is No One.", "My name is No One."),
+        (
+            "My name {# was {{ name }} #}is No One.",
+            "My name is No One.",
+        ),
     ];
 
     for (input, expected) in inputs {
@@ -263,22 +269,43 @@ fn render_if_elif_else() {
         ("{% if undefined %}a{% endif %}", ""),
         ("{% if not undefined %}a{% endif %}", "a"),
         ("{% if not is_false and is_true %}a{% endif %}", "a"),
-        ("{% if not is_false or numbers | length > 0 %}a{% endif %}", "a"),
+        (
+            "{% if not is_false or numbers | length > 0 %}a{% endif %}",
+            "a",
+        ),
         // doesn't panic with NaN results
         ("{% if 0 / 0 %}a{% endif %}", ""),
         // if and else
         ("{% if is_true %}Admin{% else %}User{% endif %}", "Admin"),
         ("{% if is_false %}Admin{% else %}User{% endif %}", "User"),
         // if and elifs
-        ("{% if is_true %}Admin{% elif is_false %}User{% endif %}", "Admin"),
-        ("{% if is_true %}Admin{% elif is_true %}User{% endif %}", "Admin"),
-        ("{% if is_true %}Admin{% elif numbers | length > 0 %}User{% endif %}", "Admin"),
+        (
+            "{% if is_true %}Admin{% elif is_false %}User{% endif %}",
+            "Admin",
+        ),
+        (
+            "{% if is_true %}Admin{% elif is_true %}User{% endif %}",
+            "Admin",
+        ),
+        (
+            "{% if is_true %}Admin{% elif numbers | length > 0 %}User{% endif %}",
+            "Admin",
+        ),
         // if, elifs and else
-        ("{% if is_true %}Admin{% elif is_false %}User{% else %}Hmm{% endif %}", "Admin"),
-        ("{% if false %}Admin{% elif is_false %}User{% else %}Hmm{% endif %}", "Hmm"),
+        (
+            "{% if is_true %}Admin{% elif is_false %}User{% else %}Hmm{% endif %}",
+            "Admin",
+        ),
+        (
+            "{% if false %}Admin{% elif is_false %}User{% else %}Hmm{% endif %}",
+            "Hmm",
+        ),
         // doesn't fallthrough elifs
         // https://github.com/Keats/tera/issues/188
-        ("{% if 1 < 4 %}a{% elif 2 < 4 %}b{% elif 3 < 4 %}c{% else %}d{% endif %}", "a"),
+        (
+            "{% if 1 < 4 %}a{% elif 2 < 4 %}b{% elif 3 < 4 %}c{% else %}d{% endif %}",
+            "a",
+        ),
     ];
 
     for (input, expected) in inputs {
@@ -297,7 +324,10 @@ fn render_for() {
     context.add("data", &vec![1, 2, 3]);
     context.add("notes", &vec![1, 2, 3]);
     context.add("vectors", &vec![vec![0, 3, 6], vec![1, 4, 7]]);
-    context.add("vectors_some_empty", &vec![vec![0, 3, 6], vec![], vec![1, 4, 7]]);
+    context.add(
+        "vectors_some_empty",
+        &vec![vec![0, 3, 6], vec![], vec![1, 4, 7]],
+    );
     context.add("map", &map);
     context.add("truthy", &2);
 
@@ -345,9 +375,12 @@ fn render_magic_variable_isnt_escaped() {
 
     let result = render_template("{{ __tera_context }}", &context);
 
-    assert_eq!(result.unwrap(), r#"{
+    assert_eq!(
+        result.unwrap(),
+        r#"{
   "html": "<html>"
-}"#.to_owned());
+}"#.to_owned()
+    );
 }
 
 // https://github.com/Keats/tera/issues/185
@@ -373,12 +406,15 @@ fn can_set_variable_in_global_context_in_forloop() {
     context.add("tags", &vec![1, 2, 3]);
     context.add("default", &"default");
 
-    let result = render_template(r#"
+    let result = render_template(
+        r#"
 {%- for i in tags -%}
 {%- set default = 1 -%}
 {%- set_global global_val = i -%}
 {%- endfor -%}
-{{ default }}{{ global_val }}"#, &context);
+{{ default }}{{ global_val }}"#,
+        &context,
+    );
 
     assert_eq!(result.unwrap(), "default3");
 }
@@ -392,8 +428,14 @@ fn default_filter_works() {
         (r#"{{ existing | default(value="hey") }}"#, "hello"),
         (r#"{{ val | default(value=1) }}"#, "1"),
         (r#"{{ val | default(value="hey") | capitalize }}"#, "Hey"),
-        (r#"{{ obj.val | default(value="hey") | capitalize }}"#, "Hey"),
-        (r#"{{ obj.val | default(value="hey") | capitalize }}"#, "Hey"),
+        (
+            r#"{{ obj.val | default(value="hey") | capitalize }}"#,
+            "Hey",
+        ),
+        (
+            r#"{{ obj.val | default(value="hey") | capitalize }}"#,
+            "Hey",
+        ),
         (r#"{{ not admin | default(value=false) }}"#, "true"),
         (r#"{{ not admin | default(value=true) }}"#, "false"),
     ];
